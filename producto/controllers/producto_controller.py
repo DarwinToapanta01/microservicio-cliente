@@ -17,6 +17,21 @@ def crear_productos(db : Session, producto: ProductoCreate):
     
     return nuevo_producto
 
+def actualizar_productos(db : Session, codigo: int, producto: ProductoCreate):
+    producto_existente = obtener_productos_id(db, codigo)
+    if not producto_existente:
+        return None
+    
+    producto_existente.nombre = producto.nombre
+    producto_existente.descripcion = producto.descripcion
+    producto_existente.precio = producto.precio
+    producto_existente.stock = producto.stock
+    
+    db.commit()
+    db.refresh(producto_existente)
+    
+    return producto_existente
+
 def eliminar_productos_id(db : Session, codigo: int):
     producto = obtener_productos_id(db, codigo)
     if not producto:
