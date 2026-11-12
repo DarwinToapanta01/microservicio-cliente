@@ -9,12 +9,7 @@ def obtener_productos_id(db : Session, codigo: int):
     return db.query(Producto).filter(Producto.codigo == codigo).first()
 
 def crear_productos(db : Session, producto: ProductoCreate):
-    nuevo_producto = Producto(
-        nombre=producto.nombre,
-        descripcion=producto.descripcion,
-        precio=producto.precio,
-        stock=producto.stock
-    )
+    nuevo_producto = Producto(nombre=producto.nombre, descripcion=producto.descripcion, precio=producto.precio, stock=producto.stock)
     
     db.add(nuevo_producto)
     db.commit()
