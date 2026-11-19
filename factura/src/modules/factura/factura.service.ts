@@ -59,7 +59,7 @@ export class FacturaService {
 
         const existeDetalle = detalles.some((d) => d.codigo === data.codigo);
         if (existeDetalle) {
-            throw new ConflictException("El código de detalle ya existe en esta factura");
+            throw new ConflictException("codigo de detalle ya existe en esta factura");
         }
 
         const nuevosDetalles = [...detalles, data];
@@ -80,10 +80,9 @@ export class FacturaService {
 
         const index = detalles.findIndex((d) => d.codigo === codigoDetalle);
         if (index === -1) {
-            throw new NotFoundException("Detalle de factura no encontrado");
+            throw new NotFoundException("detalle no encontrado");
         }
 
-        // Actualiza solo los campos enviados y mantiene intacto el código del detalle
         detalles[index] = {
             ...detalles[index],
             ...data,
@@ -102,7 +101,7 @@ export class FacturaService {
         const nuevosDetalles = detalles.filter((d) => d.codigo !== codigoDetalle);
 
         if (nuevosDetalles.length === detalles.length) {
-            throw new NotFoundException("Detalle de factura no encontrado");
+            throw new NotFoundException("detalle de factura no encontrado");
         }
 
         return db.orm.Factura.where({ codigo }).update({
