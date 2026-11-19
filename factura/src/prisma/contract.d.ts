@@ -23,7 +23,7 @@ import type {
 } from '@prisma/orm-mongo/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'c8f4b236c046be0df482110c11c52f68ca8a00125c2c5400c52ac150ec38b1ce'>;
+  StorageHashBase<'5480a96448725fb984b65bae825bb8a780fae4d82664c36b5e6359870e458f09'>;
 export type ExecutionHash = ExecutionHashBase<string>;
 export type ProfileHash =
   ProfileHashBase<'251b3ce23f6c9f561892e7c1af9d2cc941a13d64ba1aa7226b90036b09568cc3'>;
@@ -70,6 +70,7 @@ export namespace Models {
     cod_cliente: FieldOutputTypes['__unbound__']['Factura']['cod_cliente'];
     codigo: FieldOutputTypes['__unbound__']['Factura']['codigo'];
     descuento: FieldOutputTypes['__unbound__']['Factura']['descuento'];
+    detalles_factura: FieldOutputTypes['__unbound__']['Factura']['detalles_factura'];
     fecha: FieldOutputTypes['__unbound__']['Factura']['fecha'];
     iva: FieldOutputTypes['__unbound__']['Factura']['iva'];
     total: FieldOutputTypes['__unbound__']['Factura']['total'];
@@ -112,17 +113,39 @@ type ContractBase = Omit<
                     readonly _id: { readonly bsonType: 'objectId' };
                     readonly cod_cliente: { readonly bsonType: 'int' };
                     readonly codigo: { readonly bsonType: 'string' };
-                    readonly descuento: { readonly bsonType: 'decimal' };
+                    readonly descuento: { readonly bsonType: 'double' };
+                    readonly detalles_factura: {
+                      readonly bsonType: 'array';
+                      readonly items: {
+                        readonly additionalProperties: false;
+                        readonly bsonType: 'object';
+                        readonly properties: {
+                          readonly cantidad: { readonly bsonType: 'int' };
+                          readonly cod_factura: { readonly bsonType: 'int' };
+                          readonly cod_producto: { readonly bsonType: 'int' };
+                          readonly codigo: { readonly bsonType: 'int' };
+                          readonly subtotal: { readonly bsonType: 'double' };
+                        };
+                        readonly required: readonly [
+                          'cantidad',
+                          'cod_factura',
+                          'cod_producto',
+                          'codigo',
+                          'subtotal',
+                        ];
+                      };
+                    };
                     readonly fecha: { readonly bsonType: 'date' };
-                    readonly iva: { readonly bsonType: 'decimal' };
-                    readonly total: { readonly bsonType: 'decimal' };
-                    readonly total_a_pagar: { readonly bsonType: 'decimal' };
+                    readonly iva: { readonly bsonType: 'double' };
+                    readonly total: { readonly bsonType: 'double' };
+                    readonly total_a_pagar: { readonly bsonType: 'double' };
                   };
                   readonly required: readonly [
                     '_id',
                     'cod_cliente',
                     'codigo',
                     'descuento',
+                    'detalles_factura',
                     'fecha',
                     'iva',
                     'total',
@@ -147,6 +170,10 @@ type ContractBase = Omit<
                   readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/int32@1' };
                 };
                 readonly cod_producto: {
+                  readonly nullable: false;
+                  readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/int32@1' };
+                };
+                readonly codigo: {
                   readonly nullable: false;
                   readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/int32@1' };
                 };
@@ -188,7 +215,18 @@ type ContractBase = Omit<
               };
               readonly descuento: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/decimal128@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/double@1' };
+              };
+              readonly detalles_factura: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'valueObject';
+                  readonly plane: 'storage';
+                  readonly namespaceId: '__unbound__';
+                  readonly entityKind: 'valueObject';
+                  readonly entityName: 'DetalleFactura';
+                };
+                readonly many: { readonly elementNullable: false };
               };
               readonly fecha: {
                 readonly nullable: false;
@@ -196,15 +234,15 @@ type ContractBase = Omit<
               };
               readonly iva: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/decimal128@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/double@1' };
               };
               readonly total: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/decimal128@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/double@1' };
               };
               readonly total_a_pagar: {
                 readonly nullable: false;
-                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/decimal128@1' };
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'mongo/double@1' };
               };
             };
             readonly relations: Record<string, never>;
@@ -214,6 +252,7 @@ type ContractBase = Omit<
                 readonly cod_cliente: { readonly field: 'cod_cliente' };
                 readonly codigo: { readonly field: 'codigo' };
                 readonly descuento: { readonly field: 'descuento' };
+                readonly detalles_factura: { readonly field: 'detalles_factura' };
                 readonly fecha: { readonly field: 'fecha' };
                 readonly iva: { readonly field: 'iva' };
                 readonly total: { readonly field: 'total' };
