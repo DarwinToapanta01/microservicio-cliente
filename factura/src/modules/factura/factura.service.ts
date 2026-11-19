@@ -1,10 +1,15 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
 import { db } from '../../prisma/db';
 import { Factura } from '../../models/factura.model'
 import { DetalleFactura } from '../../models/detalle-factura.model'
+import { ProductoClienteServicio } from '../../services/producto-cliente.service'
 
 @Injectable()
 export class FacturaService {
+
+    constructor(
+        private readonly productoCliente: ProductoClienteServicio
+    ) { }
 
     //Esto es de factura
     async crear(data: Factura) {
@@ -53,40 +58,43 @@ export class FacturaService {
     }
 
     //Detalle de factura
+
     async agregarDetalle(codigo: string, data: DetalleFactura) {
         const factura = await this.consultar(codigo);
-        const detalles: DetalleFactura[] = [...(factura.detalles_factura ?? [])];
+        const producto = await this.productoCliente.consultar(data.cod_producto);
 
-        const existeDetalle = detalles.some((d) => d.codigo === data.codigo);
-        if (existeDetalle) {
-            throw new ConflictException("codigo de detalle ya existe en esta factura");
-        }
+        const nuevoDetalle: DetalleFactura = {
+            ...data,
+            subtotal: this.calcularSubtotal(producto.precio, data.cantidad)
+        };
 
-        const nuevosDetalles = [...detalles, data];
+        const nuevosDetalle = [...(factura.detalles_factura ?? []), nuevoDetalle];
 
         return db.orm.Factura.where({ codigo }).update({
-            detalles_factura: nuevosDetalles
+            detalles_factura: nuevosDetalle
         });
     }
 
 
-    async actualizarDetalle(
-        codigo: string,
-        codigoDetalle: number,
-        data: Partial<DetalleFactura>
-    ) {
+
+    async actualizarDetalle(codigo: string, codigoDetalle: number, data: Partial<DetalleFactura>) {
         const factura = await this.consultar(codigo);
         const detalles: DetalleFactura[] = [...(factura.detalles_factura ?? [])];
 
         const index = detalles.findIndex((d) => d.codigo === codigoDetalle);
-        if (index === -1) {
-            throw new NotFoundException("detalle no encontrado");
+        if (!index) {
+            throw new NotFoundException("Detalle no encontrado");
         }
+
+        const codProducto = data.cod_producto ?? detalles[index].cod_producto;
+        const cantidad = data.cantidad ?? detalles[index].cantidad;
+        const producto = await this.productoCliente.consultar(codProducto);
 
         detalles[index] = {
             ...detalles[index],
             ...data,
-            codigo: codigoDetalle
+            codigo: codigoDetalle,
+            subtotal: this.calcularSubtotal(producto.precio, cantidad)
         };
 
         return db.orm.Factura.where({ codigo }).update({
@@ -94,18 +102,19 @@ export class FacturaService {
         });
     }
 
+
     async eliminarDetalle(codigo: string, codigoDetalle: number) {
         const factura = await this.consultar(codigo);
         const detalles: DetalleFactura[] = [...(factura.detalles_factura ?? [])];
 
         const nuevosDetalles = detalles.filter((d) => d.codigo !== codigoDetalle);
 
-        if (nuevosDetalles.length === detalles.length) {
-            throw new NotFoundException("detalle de factura no encontrado");
-        }
-
-        return db.orm.Factura.where({ codigo }).update({
+        return db.orm.Factura.where({ codigo: factura.codigo }).update({
             detalles_factura: nuevosDetalles
         });
+    }
+
+    public calcularSubtotal(precio: number, cantidad: number): number {
+        return Number((precio * cantidad).toFixed(2));
     }
 }
