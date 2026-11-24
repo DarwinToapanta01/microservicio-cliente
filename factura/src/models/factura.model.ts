@@ -1,4 +1,4 @@
-import { DetalleFactura } from "./detalle-factura.model";
+import { DetalleFactura } from "./detalle-factura.model.js";
 
 export interface Factura {
     codigo: string;

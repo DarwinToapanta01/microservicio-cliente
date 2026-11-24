@@ -1,7 +1,7 @@
 import { Controller, Body, Get, Post, Put, Patch, Delete, Param } from '@nestjs/common';
-import { FacturaService } from './factura.service';
+import { FacturaService } from './factura.service.js';
 
-@Controller('factura')
+@Controller('facturas')
 export class FacturaController {
     constructor(private readonly facturaService: FacturaService) { }
 
@@ -41,7 +41,7 @@ export class FacturaController {
         return this.facturaService.agregarDetalle(codigo, data);
     }
 
-    @Patch(':codigo/detalle/:codigoDetalle')
+    @Patch(':codigo/detalles/:codigoDetalle')
     actualizarDetalle(
         @Param('codigo') codigo: string,
         @Param('codigoDetalle') codigoDetalle: string,

@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { db } from '../../prisma/db';
-import { Factura } from '../../models/factura.model'
-import { DetalleFactura } from '../../models/detalle-factura.model'
-import { ProductoClienteServicio } from '../../services/producto-cliente.service'
+import { db } from '../../prisma/db.js';
+import { Factura } from '../../models/factura.model.js'
+import { DetalleFactura } from '../../models/detalle-factura.model.js'
+import { ProductoClienteServicio } from '../../services/producto-cliente.service.js'
 
 @Injectable()
 export class FacturaService {

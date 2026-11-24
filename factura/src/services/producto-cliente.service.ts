@@ -1,6 +1,6 @@
-import { ServiceUnavailableException, Injectable, NotFoundException, HttpException } from '@nestjs/common';
+import { ServiceUnavailableException, Injectable, NotFoundException, HttpException  } from '@nestjs/common';
 
-import { Producto } from '../models/producto.model';
+import { Producto } from '../models/producto.model.js';
 
 @Injectable()
 export class ProductoClienteServicio {
