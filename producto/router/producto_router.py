@@ -6,11 +6,11 @@ from schemas.producto import ProductoCreate, ProductoResponse
 from controllers import producto_controller
 
 router = APIRouter(
-    prefix="/api",
+    prefix="/producto",
     tags=["productos"]
 )
 
-@router.get("/", response_model=list[ProductoResponse])
+@router.get("", response_model=list[ProductoResponse])
 def listar_productos(db : Session = Depends(obtener_db)):
     return producto_controller.obtener_productos(db)
 
@@ -21,7 +21,7 @@ def buscar_producto(codigo: int, db: Session = Depends(obtener_db)):
         raise HTTPException(400, "Producto no encontrado")
     return producto
 
-@router.post("/", response_model=ProductoResponse)
+@router.post("", response_model=ProductoResponse)
 def registrar_producto(producto: ProductoCreate, db: Session = Depends(obtener_db)):
     return producto_controller.crear_productos(db, producto)
 

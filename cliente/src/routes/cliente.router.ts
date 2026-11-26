@@ -17,7 +17,7 @@ export const clienteRouter = (app: FastifyInstance) => {
 
     app.post("/clientes", async (req, res) => {
         try {
-            const cliente = req.body;
+            const cliente = req.params;
             return await crearCliente(cliente);
         } catch (error) {
             console.log("Error al crear clientes");

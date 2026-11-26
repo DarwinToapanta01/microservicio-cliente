@@ -14,7 +14,9 @@ def obtener_db():
     db = sessionLocal()
     try:
         yield db
-    except:
-        print("Ocurrió un error en la captura de datos")
+    except Exception as e:
+        print("Ocurrió un error en la captura de datos:", e)
+        db.rollback()
+        raise
     finally:
         db.close()
