@@ -1,7 +1,9 @@
+import os
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-engine = create_engine("sqlite:///./db_producto.db")
+engine = create_engine(os.getenv("DATABASE_URL"))
 
 sessionLocal = sessionmaker(
     autoflush=False,
