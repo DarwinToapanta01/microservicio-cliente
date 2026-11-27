@@ -1,11 +1,14 @@
 import os
-
+from dotenv import load_dotenv
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
-engine = create_engine(os.getenv("DATABASE_URL"))
+load_dotenv()
 
-sessionLocal = sessionmaker(
+DATABASE_URL = os.getenv("DATABASE_URL")
+engine = create_engine(DATABASE_URL)
+
+SessionLocal = sessionmaker(
     autoflush=False,
     autocommit=False,
     bind=engine 
@@ -13,7 +16,7 @@ sessionLocal = sessionmaker(
 Base = declarative_base()
 
 def obtener_db():
-    db = sessionLocal()
+    db = SessionLocal()
     try:
         yield db
     except Exception as e:
